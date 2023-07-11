@@ -12,8 +12,9 @@ type Ping struct {
 	Result string `json:"result"`
 }
 
+//! もう少しモック関数に修正
 func main() {
-	analysis := func(w http.ResponseWriter, _ *http.Request) {
+	analysis := func(w http.ResponseWriter, r *http.Request) {
 		ping := Ping{http.StatusOK, "Ok"}
 		res, err := json.Marshal(ping)
 
@@ -22,6 +23,9 @@ func main() {
 			return
 		}
 
+		if r.Method == "POST" {
+			fmt.Println(r)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(res)
 	}
