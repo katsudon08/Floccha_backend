@@ -1,9 +1,13 @@
 import spacy
 
-nlp = spacy.load("en_core_web_sm")
+def codeParser(text):
+    nlp = spacy.load("en_core_web_sm")
 
-doc = nlp("int num( int n ) { return n; }")
-for token in doc:
-    print(token.text, token.pos_, token.dep_)
+    doc = nlp(text)
+    for token in doc:
+        print(token.text, token.pos_)
 
-print(doc)
+codeParser("""
+for i in range(5):
+    print(i)
+           """)

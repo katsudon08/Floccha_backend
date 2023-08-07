@@ -1,0 +1,65 @@
+<program> ::= <statement_list>
+
+<statement_list> ::= <statement>
+                   | <statement> NEWLINE <statement_list>
+
+<statement> ::= <assignment>
+               | <if_statement>
+               | <while_loop>
+               | <function_definition>
+               | <expression>
+
+<assignment> ::= <identifier> '=' <expression>
+
+<if_statement> ::= "if" <expression> ":" NEWLINE INDENT <statement_list> DEDENT
+                   [ "elif" <expression> ":" NEWLINE INDENT <statement_list> DEDENT ]
+                   [ "else" ":" NEWLINE INDENT <statement_list> DEDENT ]
+
+<while_loop> ::= "while" <expression> ":" NEWLINE INDENT <statement_list> DEDENT
+
+<function_definition> ::= "def" <identifier> '(' [ <parameter_list> ] ')' ":" NEWLINE INDENT <statement_list> DEDENT
+
+<parameter_list> ::= <identifier> [ ',' <parameter_list> ]
+
+<expression> ::= <simple_expression>
+                 | <simple_expression> <comparison_operator> <simple_expression>
+
+<simple_expression> ::= <term>
+                          | <simple_expression> <addition_operator> <term>
+
+<term> ::= <factor>
+            | <term> <multiplication_operator> <factor>
+
+<factor> ::= <literal>
+              | <identifier>
+              | '(' <expression> ')'
+              | <function_call>
+
+<function_call> ::= <identifier> '(' [ <argument_list> ] ')'
+
+<argument_list> ::= <expression> [ ',' <argument_list> ]
+
+<comparison_operator> ::= '==' | '!=' | '<' | '<=' | '>' | '>='
+
+<addition_operator> ::= '+' | '-'
+
+<multiplication_operator> ::= '*' | '/'
+
+<identifier> ::= LETTER (LETTER | DIGIT | '_')*
+
+<literal> ::= NUMBER | STRING | BOOLEAN
+
+<NUMBER> ::= [ '-' ] DIGIT+
+
+<STRING> ::= '"' <characters> '"'
+               | "'" <characters> "'"
+
+<BOOLEAN> ::= "True" | "False"
+
+<LETTER> ::= [a-zA-Z]
+
+<DIGIT> ::= [0-9]
+
+<NEWLINE> ::= '\n'
+<INDENT>  ::= INDENT  // 仮定：インデントはここではスペースの連続とします
+<DEDENT>  ::= DEDENT  // 仮定：デデントはここではスペースの連続とします
