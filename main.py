@@ -1,5 +1,5 @@
 import spacy
-from spacy.symbols import SYM, PUNCT
+from spacy.symbols import SYM, PUNCT, SPACE
 import keyword
 import re
 
@@ -39,30 +39,65 @@ del tokens[0]
 
 # 抽象構文木生成、意味解析
 class ASTNode:
-    def __init__(self, value="VALUE", position="POSITION"):
+    def __init__(self, value="VALUE"):
         self.value = value
-        self.position = position
         self.children = []
 
     def printNode(self):
         print("value:", self.value)
-        print("position:", self.position)
         print("children:",  self.children, "\n")
 
 astNodes = []
 for token in tokens:
-    if token.pos == PUNCT:
+    if token.pos in [PUNCT, SPACE]:
         continue
-    astNodes.append(ASTNode(token.text, token.pos_))
-
+    astNodes.append(ASTNode(token.text))
 
 for astNode in astNodes:
     astNode.printNode()
 
+# 予約語一覧
 print(keyword.kwlist)
 
+keywordNodes = []
+unkeywordNodes = []
+kwNum = 0
+
+for key, astNode in enumerate(astNodes):
+    if astNode.value in keyword.kwlist:
+        match astNode.value:
+            case "for":
+                kwNum = key
+                # 変数
+                while astNodes[kwNum + 1].value != "in":
+                    kwNum += 1
+                    astNode.children.append(astNodes[kwNum].value)
+                # イテラブルシーケンス
+
+                # rangeの場合
+                call = ASTNode("call")
+                kwNum += 1
+                astNode.children.append(astNodes[kwNum].value)
+                kwNum += 1
+                astNodes[kwNum].children.append(astNodes[kwNum].value)
+                astNodes[kwNum].children.append(call.value)
+                kwNum += 1
+                call.children.append(astNodes[kwNum].value)
+                call.children.append(astNodes[kwNum + 1].value)
+
+
+                # それ以外の場合
+                print([i.children for i in astNodes])
+                # enumerateが原因でバグ発生？
+                for key, astNode in enumerate(astNodes):
+                    print(astNode.children)
+                    if astNode.children == []:
+                        astNodes.pop(key)
+            # case "in":
+
 for astNode in astNodes:
-    astNode.children.append()
+    astNode.printNode()
+call.printNode()
 
 """# 抽象構文木のノードを表すクラス
 class ASTNode:
