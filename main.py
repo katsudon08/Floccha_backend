@@ -56,8 +56,9 @@ class ASTNode:
 
 astNodes = []
 for token in tokens:
-    if token.pos == SPACE:
-        continue
+    # !改行とスペースの区別をつける必要がある
+    # if token.pos == SPACE:
+    #     continue
     astNodes.append(ASTNode(token.text))
 
 for astNode in astNodes:
@@ -116,15 +117,16 @@ def makeLabel(key):
         keyCopy += 1
     return label
 
-startMidRep = MidRepNode("start", 0, 0, "開始")
-endMidRep = MidRepNode("end", 0, None, "終了")
-
-startMidRep.printMidRep()
-endMidRep.printMidRep()
-
 midReps = []
 variables = []
 contents = []
+
+startMidRep = MidRepNode("start", 0, 0, "開始")
+endMidRep = MidRepNode("end", 0, None, "終了")
+
+midReps.append(startMidRep)
+startMidRep.printMidRep()
+endMidRep.printMidRep()
 
 # 字句から直接中間表現を作成しちゃおう
 for key, astNode in enumerate(astNodes):
@@ -145,7 +147,7 @@ for key, astNode in enumerate(astNodes):
                 forStartMidRep = MidRepNode("for_start", 0, 100, label)
             else:
                 forStartMidRep = MidRepNode("for_start", 0, None, label)
-            forEndMidRep = MidRepNode("for_end", 0, forStartMidRep.position['y'] + 100, "")
+            forEndMidRep = MidRepNode("for_end", 0, None, "")
 
             # 中の表現をstartとendの間につなぐ必要がある
             forStartMidRep.source = forStartMidRep.id
@@ -162,7 +164,7 @@ for key, astNode in enumerate(astNodes):
         case "while":
             label = makeLabel(key)
             # EdgeVERにする
-            loopMidRep = MidRepNode("while", 0, 100, label)
+            loopMidRep = MidRepNode("while", 0, None, label)
 
             midReps.append(loopMidRep)
             loopMidRep.printMidRep()
@@ -170,10 +172,12 @@ for key, astNode in enumerate(astNodes):
         case "if":
             label = makeLabel(key)
             # EdgeVERにする
-            branchMidRep = MidRepNode("if", 0, 100, label)
+            branchMidRep = MidRepNode("if", 0, None, label)
 
             midReps.append(branchMidRep)
             branchMidRep.printMidRep()
+
+midReps.append(endMidRep)
 
 for key, midRep in enumerate(midReps):
     if midRep.position['y'] == None:
