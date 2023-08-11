@@ -37,6 +37,7 @@ tokeninze(
     """
 for i in range(5):
     print(i)
+    a = i
 """
 )
 del tokens[0]
@@ -115,33 +116,55 @@ def makeLabel(key):
         keyCopy += 1
     return label
 
+startMidRep = MidRepNode("start", 0, 0, "開始")
+endMidRep = MidRepNode("end", 0, None, "終了")
+
+startMidRep.printMidRep()
+endMidRep.printMidRep()
+
+midReps = []
+variables = []
+contents = []
+
 # 字句から直接中間表現を作成しちゃおう
 for key, astNode in enumerate(astNodes):
     match astNode.value:
+        case '=':
+            variable = astNodes[key - 1].value
+            content = astNodes[key + 1].value
+            variableMidRep = MidRepNode("variable-" + variable, 0, None, "変数 " + variable + " に " + content + " を代入")
+            variables.append(variable)
+            contents.append(content)
+            midReps.append(variableMidRep)
+
+            variableMidRep.printMidRep()
         case "for":
             label = makeLabel(key)
-            # startMidRep = MidRep("for_start", 0, 100, label)
-            # endMidRep = MidRep("for_end", 0, 200, " ")
             #* 前の要素の高さに+100した高さにする必要がある
-            startMidRep = MidRepNode("for_start", 0, 100, label)
-            endMidRep = MidRepNode("for_end", 0, startMidRep.position['y'] + 100, None)
+            if astNodes[0]:
+                forStartMidRep = MidRepNode("for_start", 0, 100, label)
+            else:
+                forStartMidRep = MidRepNode("for_start", 0, None, label)
+            forEndMidRep = MidRepNode("for_end", 0, forStartMidRep.position['y'] + 100, "")
 
             # 中の表現をstartとendの間につなぐ必要がある
-            startMidRep.source = startMidRep.id
-            startMidRep.target = endMidRep.id
+            forStartMidRep.source = forStartMidRep.id
+            forStartMidRep.target = forEndMidRep.id
 
-            endMidRep.source = endMidRep.id
-            endMidRep.target = startMidRep.id
+            forEndMidRep.source = forEndMidRep.id
+            forEndMidRep.target = forStartMidRep.id
 
-            startMidRep.printMidRep()
-            endMidRep.printMidRep()
+            midReps.append(forStartMidRep)
+            midReps.append(forEndMidRep)
+            forStartMidRep.printMidRep()
+            forEndMidRep.printMidRep()
 
         case "while":
             label = makeLabel(key)
             # EdgeVERにする
-            # loopMidRep = MidRep("while", 0, 100, label)
             loopMidRep = MidRepNode("while", 0, 100, label)
 
+            midReps.append(loopMidRep)
             loopMidRep.printMidRep()
 
         case "if":
@@ -149,7 +172,17 @@ for key, astNode in enumerate(astNodes):
             # EdgeVERにする
             branchMidRep = MidRepNode("if", 0, 100, label)
 
+            midReps.append(branchMidRep)
             branchMidRep.printMidRep()
+
+for key, midRep in enumerate(midReps):
+    if midRep.position['y'] == None:
+        midRep.position['y'] = key * 100
+
+print("AFTER")
+
+for midRep in midReps:
+    midRep.printMidRep()
 
 # 一旦様子見
 """keywordNodes = []
@@ -191,5 +224,3 @@ for key, astNode in enumerate(astNodes):
 for astNode in astNodes:
     astNode.printNode()
 call.printNode()"""
-
-# 中間表現の生成
