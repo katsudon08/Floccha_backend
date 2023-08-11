@@ -89,6 +89,24 @@ class MidRepEdge(MidRep):
         print(self.source)
         print(self.targetf)
 
+# nodeとedgeの要素を含む
+class MidRepNode:
+    def __init__(self, id, x, y, label):
+        self.id = id
+        self.position = {'x': x, 'y': y}
+        self.data = {"label": label}
+        self.edgeId = "edge-" + id
+        self.source = None
+        self.target = None
+
+    def printMidRep(self):
+        print("id:", self.id)
+        print("position:", self.position)
+        print("data:", self.data)
+        print("edge-id:", self.edgeId)
+        print("source:", self.source)
+        print("target:", self.target, "\n")
+
 def makeLabel(key):
     keyCopy = key + 1
     label = ""
@@ -102,20 +120,35 @@ for key, astNode in enumerate(astNodes):
     match astNode.value:
         case "for":
             label = makeLabel(key)
-            startMidRep = MidRep("for_start", 0, 100, label)
-            endMidRep = MidRep("for_end", 0, 200, " ")
+            # startMidRep = MidRep("for_start", 0, 100, label)
+            # endMidRep = MidRep("for_end", 0, 200, " ")
+            #* 前の要素の高さに+100した高さにする必要がある
+            startMidRep = MidRepNode("for_start", 0, 100, label)
+            endMidRep = MidRepNode("for_end", 0, startMidRep.position['y'] + 100, None)
+
             # 中の表現をstartとendの間につなぐ必要がある
+            startMidRep.source = startMidRep.id
+            startMidRep.target = endMidRep.id
+
+            endMidRep.source = endMidRep.id
+            endMidRep.target = startMidRep.id
+
             startMidRep.printMidRep()
             endMidRep.printMidRep()
+
         case "while":
             label = makeLabel(key)
             # EdgeVERにする
-            loopMidRep = MidRep("while", 0, 100, label)
+            # loopMidRep = MidRep("while", 0, 100, label)
+            loopMidRep = MidRepNode("while", 0, 100, label)
+
             loopMidRep.printMidRep()
+
         case "if":
             label = makeLabel(key)
             # EdgeVERにする
-            branchMidRep = MidRep("if", 0, 100, label)
+            branchMidRep = MidRepNode("if", 0, 100, label)
+
             branchMidRep.printMidRep()
 
 # 一旦様子見
