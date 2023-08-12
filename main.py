@@ -42,7 +42,7 @@ for i in range(5):
     a = i
 """
 )
-del tokens[0]
+# del tokens[0]
 
 # 抽象構文木生成、意味解析
 class ASTNode:
@@ -56,15 +56,33 @@ class ASTNode:
 
 print("SPACE調整")
 
+prev_spaceNum = None
+current_spaceNum = len(tokens[0].text) - 2
+block = []
+blockAstNodes = []
 astNodes = []
-for token in tokens:
+for key, token in enumerate(tokens):
     print(token.text)
     # 改行とスペースの区別をつける必要がある
     # !スペースの数が同じだったら同じブロックである判定を出す
-    if token.pos == SPACE:
+    if tokens[key - 1].pos == SPACE:
         print("スペース")
         print(len(token.text))
-        spaceNum = len(token.text) - 2
+        prev_spaceNum = current_spaceNum
+        current_spaceNum = len(token.text) - 2
+        if prev_spaceNum != current_spaceNum:
+            if current_spaceNum == 0:
+                for astNode in astNodes:
+                    if astNode.value in block:
+                        astNodes.remove(astNode)
+                for astBlock in block:
+                    blockAstNodes.append(ASTNode(astBlock))
+                astNodes.append(blockAstNodes)
+                block = []
+            else:
+                while token.pos != SPACE:
+                    block.append(token.text)
+                    print(block)
         continue
     astNodes.append(ASTNode(token.text))
 
