@@ -80,9 +80,11 @@ for key, token in enumerate(tokens):
                 astNodes.append(blockAstNodes)
                 block = []
             else:
-                while token.pos != SPACE:
+                keyCopy = key
+                while tokens[keyCopy].pos != SPACE:
                     block.append(token.text)
                     print(block)
+                    keyCopy += 1
         continue
     astNodes.append(ASTNode(token.text))
 
