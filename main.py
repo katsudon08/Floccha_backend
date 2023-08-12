@@ -42,7 +42,6 @@ for i in range(5):
 )
 del tokens[0]
 
-
 # 抽象構文木生成、意味解析
 class ASTNode:
     def __init__(self, value="VALUE"):
@@ -53,12 +52,17 @@ class ASTNode:
         print("value:", self.value)
         print("children:", self.children, "\n")
 
+print("SPACE調整")
 
 astNodes = []
+# ! :があるかないかでspaceの数が変わってしまう
 for token in tokens:
+    print(token.text)
     # !改行とスペースの区別をつける必要がある
-    # if token.pos == SPACE:
-    #     continue
+    if token.pos == SPACE:
+        print("SPACE")
+        print(len(token.text))
+        # continue
     astNodes.append(ASTNode(token.text))
 
 for astNode in astNodes:
