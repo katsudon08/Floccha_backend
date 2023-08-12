@@ -16,7 +16,9 @@ def tokeninze(text):
     for token in doc:
         print(token.text, token.pos_)
         reTokenText = re.sub("\(", lambda x: f" {x.group()} ", token.text)
-        reTokenText = re.sub("\)", lambda x: f"{x.group()} ", reTokenText)
+        # ) 単体の時はスペースを入れないようにする
+        if token.text != ')':
+            reTokenText = re.sub("\)", lambda x: f"{x.group()} ", reTokenText)
         reTokenText = re.sub("\%|\/", lambda x: f" {x.group()} ", reTokenText)
         firstTokens += f" {reTokenText}"
         print(firstTokens)
@@ -55,14 +57,15 @@ class ASTNode:
 print("SPACE調整")
 
 astNodes = []
-# ! :があるかないかでspaceの数が変わってしまう
 for token in tokens:
     print(token.text)
-    # !改行とスペースの区別をつける必要がある
+    # 改行とスペースの区別をつける必要がある
+    # !スペースの数が同じだったら同じブロックである判定を出す
     if token.pos == SPACE:
-        print("SPACE")
+        print("スペース")
         print(len(token.text))
-        # continue
+        spaceNum = len(token.text) - 2
+        continue
     astNodes.append(ASTNode(token.text))
 
 for astNode in astNodes:
