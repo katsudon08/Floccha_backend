@@ -5,7 +5,6 @@ import re
 
 tokens = []
 
-
 # トークン化
 def tokeninze(text):
     nlp = spacy.load("en_core_web_sm")
@@ -34,7 +33,7 @@ def tokeninze(text):
     for i in tokens:
         print(i)
 
-
+# 改行の数だけ、スペースの数が増えてしまう
 tokeninze("""
 for i in range(5):
     print(i)
@@ -52,14 +51,21 @@ class ASTNode:
         print("value:", self.value)
         print("children:", self.children, "\n")
 
+    def __str__(self):
+        return f"value: {self.value}"
+
 print("SPACE調整")
 
 prev_spaceNum = None
 current_spaceNum = 0
 
 block = []
+# 作り変え
 blockAstNodes = []
 astNodes = []
+
+for token in tokens:
+    astNodes.append(ASTNode(token.text))
 
 for key, token in enumerate(tokens):
     print(token.text)
@@ -68,36 +74,69 @@ for key, token in enumerate(tokens):
 
     prevKey = key - 1
     if token.pos == SPACE:
+        # if len(tokens) - 1 == key:
+        #         print("削除作業実行")
+        #         for astNode in astNodes:
+        #             if astNode.value in block:
+        #                 print(astNode)
+        #                 astNodes.remove(astNode)
+        #         for astBlock in block:
+        #             blockAstNodes.append(ASTNode(astBlock))
+        #         astNodes.append(blockAstNodes)
+        #         blockAstNodes = []
+        #         block = []
         continue
     elif tokens[prevKey].pos == SPACE and key != 0:
         print("該当文字:", token)
         print("スペース:", len(tokens[prevKey].text) - 2)
+
         prev_spaceNum = current_spaceNum
         current_spaceNum = len(tokens[prevKey].text) - 2
+
+# !後で関数化を行うこと
         if prev_spaceNum != current_spaceNum:
             if current_spaceNum != 0:
                 keyCopy = key
-                # バグを発見
+                print("keyCopy", keyCopy)
                 while tokens[keyCopy].pos != SPACE:
-                    block.append(token.text)
+                    block.append(tokens[keyCopy].text)
+                    # listのkeyが達磨落としみたいになっている
+                    astNodes.pop(key)
                     print(block)
                     keyCopy += 1
                 print(block)
             else:
-                for astNode in astNodes:
-                    if astNode.value in block:
-                        astNodes.remove(astNode)
-                for astBlock in block:
-                    blockAstNodes.append(ASTNode(astBlock))
-                astNodes.append(blockAstNodes)
-                blockAstNodes = []
-                block = []
-    astNodes.append(ASTNode(token.text))
+                pass
+                # print("削除作業実行")
+                # for astNode in astNodes:
+                #     if astNode.value in block:
+                #         astNodes.remove(astNode)
+                # for astBlock in block:
+                #     blockAstNodes.append(ASTNode(astBlock))
+                # astNodes.append(blockAstNodes)
+                # blockAstNodes = []
+                # block = []
+        elif prev_spaceNum == current_spaceNum and current_spaceNum != 0:
+            keyCopy = key
+            print("keyCopy", keyCopy)
+            while tokens[keyCopy].pos != SPACE:
+                block.append(tokens[keyCopy].text)
+                print(block)
+                keyCopy += 1
+            print(block)
+
+    print("prev:", prev_spaceNum, "current:", current_spaceNum)
+
 
 print("デバッグ開始")
 
 for astNode in astNodes:
-    astNode.printNode()
+    if type(astNode) == list:
+        for i in astNode:
+            print(i.value)
+            i.printNode()
+    else:
+        astNode.printNode()
 # print(astNodes)
 
 # 予約語一覧
