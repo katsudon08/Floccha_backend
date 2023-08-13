@@ -77,6 +77,7 @@ for key, token in enumerate(tokens):
         if prev_spaceNum != current_spaceNum:
             if current_spaceNum != 0:
                 keyCopy = key
+                # バグを発見
                 while tokens[keyCopy].pos != SPACE:
                     block.append(token.text)
                     print(block)
