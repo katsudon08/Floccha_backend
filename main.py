@@ -64,8 +64,14 @@ block = []
 blockAstNodes = []
 astNodes = []
 
+astNewTokens = []
+newTokens = []
+
+num = 0
+
 for token in tokens:
-    astNodes.append(ASTNode(token.text))
+    # astNodes.append(ASTNode(token.text))
+    newTokens.append(token.text)
 
 for key, token in enumerate(tokens):
     print(token.text)
@@ -96,14 +102,14 @@ for key, token in enumerate(tokens):
 # !後で関数化を行うこと
         if prev_spaceNum != current_spaceNum:
             if current_spaceNum != 0:
-                keyCopy = key
+                keyCopy = key - num
                 print("keyCopy", keyCopy)
                 while tokens[keyCopy].pos != SPACE:
                     block.append(tokens[keyCopy].text)
-                    # listのkeyが達磨落としみたいになっている
-                    astNodes.pop(key)
+                    newTokens.pop(num)
                     print(block)
                     keyCopy += 1
+                num = key - (keyCopy - key)
                 print(block)
             else:
                 pass
@@ -117,12 +123,14 @@ for key, token in enumerate(tokens):
                 # blockAstNodes = []
                 # block = []
         elif prev_spaceNum == current_spaceNum and current_spaceNum != 0:
-            keyCopy = key
+            keyCopy = key - num
             print("keyCopy", keyCopy)
             while tokens[keyCopy].pos != SPACE:
                 block.append(tokens[keyCopy].text)
+                newTokens.pop(num)
                 print(block)
                 keyCopy += 1
+            num = key - (keyCopy - key)
             print(block)
 
     print("prev:", prev_spaceNum, "current:", current_spaceNum)
@@ -130,13 +138,21 @@ for key, token in enumerate(tokens):
 
 print("デバッグ開始")
 
-for astNode in astNodes:
-    if type(astNode) == list:
-        for i in astNode:
-            print(i.value)
-            i.printNode()
+# for astNode in astNodes:
+#     if type(astNode) == list:
+#         for i in astNode:
+#             print(i.value)
+#             i.printNode()
+#     else:
+#         astNode.printNode()
+
+for newToken in newTokens:
+    if type(newToken) == list:
+        for i in newToken:
+            print(i)
     else:
-        astNode.printNode()
+        print(newToken)
+
 # print(astNodes)
 
 # 予約語一覧
