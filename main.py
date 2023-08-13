@@ -69,7 +69,8 @@ for key, token in enumerate(tokens):
     prevKey = key - 1
     if token.pos == SPACE:
         continue
-    elif tokens[prevKey].pos == SPACE:
+    elif tokens[prevKey].pos == SPACE and key != 0:
+        print("該当文字:", token)
         print("スペース:", len(tokens[prevKey].text) - 2)
         prev_spaceNum = current_spaceNum
         current_spaceNum = len(tokens[prevKey].text) - 2
