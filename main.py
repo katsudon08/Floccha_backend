@@ -35,14 +35,12 @@ def tokeninze(text):
         print(i)
 
 
-tokeninze(
-    """
+tokeninze("""
 for i in range(5):
     print(i)
     a = i
-"""
-)
-# del tokens[0]
+""")
+del tokens[0]
 
 # 抽象構文木生成、意味解析
 class ASTNode:
@@ -57,39 +55,48 @@ class ASTNode:
 print("SPACE調整")
 
 prev_spaceNum = None
-current_spaceNum = len(tokens[0].text) - 2
+current_spaceNum = 0
+
 block = []
 blockAstNodes = []
 astNodes = []
+
 for key, token in enumerate(tokens):
     print(token.text)
     # 改行とスペースの区別をつける必要がある
     # !スペースの数が同じだったら同じブロックである判定を出す
-    if tokens[key - 1].pos == SPACE:
-        print("スペース")
-        print(len(token.text))
+
+    prevKey = key - 1
+    if token.pos == SPACE:
+        continue
+    elif tokens[prevKey].pos == SPACE:
+        print("スペース:", len(tokens[prevKey].text) - 2)
         prev_spaceNum = current_spaceNum
-        current_spaceNum = len(token.text) - 2
+        current_spaceNum = len(tokens[prevKey].text) - 2
         if prev_spaceNum != current_spaceNum:
-            if current_spaceNum == 0:
+            if current_spaceNum != 0:
+                keyCopy = key
+                while tokens[keyCopy].pos != SPACE:
+                    block.append(token.text)
+                    print(block)
+                    keyCopy += 1
+                print(block)
+            else:
                 for astNode in astNodes:
                     if astNode.value in block:
                         astNodes.remove(astNode)
                 for astBlock in block:
                     blockAstNodes.append(ASTNode(astBlock))
                 astNodes.append(blockAstNodes)
+                blockAstNodes = []
                 block = []
-            else:
-                keyCopy = key
-                while tokens[keyCopy].pos != SPACE:
-                    block.append(token.text)
-                    print(block)
-                    keyCopy += 1
-        continue
     astNodes.append(ASTNode(token.text))
+
+print("デバッグ開始")
 
 for astNode in astNodes:
     astNode.printNode()
+# print(astNodes)
 
 # 予約語一覧
 print(keyword.kwlist)
