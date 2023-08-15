@@ -47,3 +47,12 @@ def nesting(tokens):
         if token.pos_ == SPACE:
             prev_spaceNum = current_spaceNum
             current_spaceNum = len(token)
+        # ネストが一つ深くなった時
+        if current_spaceNum > prev_spaceNum:
+            pass
+        # ネストが終わった時
+        elif current_spaceNum < prev_spaceNum:
+            pass
+        # ネストが同じとき
+        else:
+            pass
