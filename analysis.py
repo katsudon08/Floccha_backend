@@ -33,13 +33,17 @@ def tokenize(textBlock):
 tokens = tokenize(textBlock)
 
 for token in tokens:
-    print(token)
+    print(token, token.pos_)
 
+def nesting(tokens):
+    if tokens[0].pos == SPACE:
+        raise ValueError
 
-
-def nestBlocking(text):
+    midRepTokens = []
     prev_spaceNum = 0
     current_spaceNum = 0
 
-    if text[0].pos == SPACE:
-        raise ValueError
+    for token in tokens:
+        if token.pos_ == SPACE:
+            prev_spaceNum = current_spaceNum
+            current_spaceNum = len(token)
