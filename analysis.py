@@ -49,21 +49,30 @@ def nesting(tokens):
 
     for key, token in enumerate(tokens):
         print(token.text)
+        print(prev_spaceNum, current_spaceNum)
         if token.pos == SPACE:
             prev_spaceNum = current_spaceNum
             current_spaceNum = len(token.text)
             print("スペース:", current_spaceNum)
-            continue
+            # midRepTokens.append(None)
+            # continue
         # ネストが同じとき
         elif current_spaceNum == prev_spaceNum and current_spaceNum != 0:
-            midRepTokens[nestKey].append(token.text)
-            midRepTokens.append(None)
-            continue
+            print(nestKey)
+            # midRepTokens[nestKey].append(token.text)
+            # midRepTokens.append(None)
+            # continue
         # ネストが一つ深くなった時
         if current_spaceNum > prev_spaceNum:
-            nestKey = key - 1
-            midRepTokens.append([token.text])
-            continue
+            if tokens[key - 1].pos == SPACE:
+                # midRepTokens.append([token.text])
+                # ネストキーの値が変更されていない
+                nestkey = key
+                print(nestKey)
+            else:
+                print(nestKey)
+                # midRepTokens[nestKey].append(token.text)
+            # continue
         # ネストが終わった時
         elif current_spaceNum < prev_spaceNum:
             nestKey = None
