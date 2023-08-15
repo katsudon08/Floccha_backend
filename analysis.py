@@ -84,3 +84,28 @@ nestedTokens = nesting(tokens)
 print("ネスト後\n")
 for token in nestedTokens:
     print(token)
+
+class MidRep:
+    def __init__(self, id, x, y, label):
+        self.id = id
+        self.position = {'x': x, 'y': y}
+        self.data = {"label": label}
+        self.edgeId = "edge-" + id
+        self.source = None
+        self.target = None
+
+    def __str__(self):
+        print("id:", self.id)
+        print("position:", self.position)
+        print("data:", self.data)
+        print("edge-id:", self.edgeId)
+        print("source:", self.source)
+        print("target:", self.target, "\n")
+
+def makeLabel(tokens, key):
+    key = key + 1
+    label = ""
+    while tokens[key] != ':':
+        label += tokens[key] + ' '
+        key += 1
+    return label
