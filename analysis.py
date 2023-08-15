@@ -30,6 +30,8 @@ def tokenize(textBlock):
     reTokens = nlp(reTokensText)
     return reTokens
 
+print("-----tokenize-----")
+
 tokens = tokenize(textBlock)
 
 for token in tokens:
@@ -40,19 +42,38 @@ def nesting(tokens):
         raise ValueError
 
     midRepTokens = []
+
+    nestKey = None
     prev_spaceNum = 0
     current_spaceNum = 0
 
-    for token in tokens:
-        if token.pos_ == SPACE:
+    for key, token in enumerate(tokens):
+        print(token.text)
+        if token.pos == SPACE:
             prev_spaceNum = current_spaceNum
-            current_spaceNum = len(token)
+            current_spaceNum = len(token.text)
+            print("スペース:", current_spaceNum)
+        # ネストが同じとき
+        elif current_spaceNum == prev_spaceNum and current_spaceNum != 0:
+            midRepTokens[nestKey].append(token.text)
+            midRepTokens.append(None)
+            continue
         # ネストが一つ深くなった時
         if current_spaceNum > prev_spaceNum:
-            pass
+            nestKey = key
+            midRepTokens.append([token.text])
         # ネストが終わった時
         elif current_spaceNum < prev_spaceNum:
-            pass
-        # ネストが同じとき
-        else:
-            pass
+            nestKey = None
+        midRepTokens.append(token.text)
+
+    midRepTokens = list(filter(None, midRepTokens))
+    return midRepTokens
+
+print("-----nesting-----")
+
+nestedTokens = nesting(tokens)
+
+print("ネスト後")
+for token in nestedTokens:
+    print(token)
