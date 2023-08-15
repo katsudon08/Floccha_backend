@@ -10,7 +10,7 @@ textBlock = [
 
 def tokenize(textBlock):
     nlp = spacy.load("en_core_web_sm")
-    reTokens = ""
+    reTokensText = ""
 
     for text in textBlock:
         doc = nlp(text)
@@ -22,13 +22,24 @@ def tokenize(textBlock):
                 reToken = re.sub("\)", lambda x: f"{x.group()} ", reToken)
             reToken = re.sub("\%|\/", lambda x: f" {x.group()} ", reToken)
             if key == 0:
-                reTokens += reToken
+                reTokensText += reToken
             else:
-                reTokens += f" {reToken}"
-            print(reTokens)
+                reTokensText += f" {reToken}"
+            print(reTokensText)
 
+    reTokens = nlp(reTokensText)
     return reTokens
 
-text = tokenize(textBlock)
+tokens = tokenize(textBlock)
 
-print(text)
+for token in tokens:
+    print(token)
+
+
+
+def nestBlocking(text):
+    prev_spaceNum = 0
+    current_spaceNum = 0
+
+    if text[0].pos == SPACE:
+        raise ValueError
