@@ -79,6 +79,7 @@ def nesting(tokens):
 
 print("-----nesting-----")
 
+# このトークンは型がstringになっている
 nestedTokens = nesting(tokens)
 
 print("ネスト後\n")
@@ -95,12 +96,15 @@ class MidRep:
         self.target = None
 
     def __str__(self):
-        print("id:", self.id)
-        print("position:", self.position)
-        print("data:", self.data)
-        print("edge-id:", self.edgeId)
-        print("source:", self.source)
-        print("target:", self.target, "\n")
+        r = ""
+        r += "id: " + self.id + "\n"
+        r += "pos: " + str(self.position) + "\n"
+        r += "data: " + str(self.data) + "\n"
+        r += "edge-id: " + self.edgeId + "\n"
+        r += "src: " + str(self.source) + "\n"
+        r += "trg: " + str(self.target) + "\n"
+
+        return r
 
 def makeLabel(tokens, key):
     key = key + 1
@@ -109,3 +113,84 @@ def makeLabel(tokens, key):
         label += tokens[key] + ' '
         key += 1
     return label
+
+def makeMidRep(tokens):
+    midReps = []
+    variables = []
+    contents = []
+
+    startMidRep = MidRep("start", 0, None, "開始")
+    endMidRep = MidRep("end", 0, None, "終了")
+
+    midReps.append(startMidRep)
+    print(startMidRep)
+    print(endMidRep)
+
+    for key, token in enumerate(tokens):
+        if type(token) == list:
+            # リスト時の処理を記述すること
+            pass
+        else:
+            match token:
+                case '=':
+                    variable = token[key - 1]
+                    content = token[key + 1]
+
+                    variableMidRep = MidRep(f"variable-{variable}", 0, None, f"変数 {variable} に {content} を代入")
+
+                    variables.append(variable)
+                    contents.append(content)
+                    midReps.append(variableMidRep)
+
+                    print(variableMidRep)
+
+                case "for":
+                    label = makeLabel(tokens, key)
+                    # 前要素の高さに+100した高さにする必要がある
+                    forStartMidRep = MidRep("for_start", 0, None, label)
+                    forEndMidRep = MidRep("for_end", 0, None, "")
+
+                    keyCopy = key
+                    while type(tokens[keyCopy]) != list:
+                        keyCopy += 1
+
+                    # 中の表現をstartとendの間につなぐ必要がある
+                    forStartMidRep.source = forStartMidRep.id
+                    forStartMidRep.target = forEndMidRep.id
+
+                    forEndMidRep.source = forEndMidRep.id
+                    forEndMidRep.target = forStartMidRep.id
+
+                    midReps.append(forEndMidRep)
+                    midReps.append(forEndMidRep)
+
+                    print(forStartMidRep)
+                    print(forEndMidRep)
+
+                case "while":
+                    label = makeLabel(tokens, key)
+                    loopMidRep = MidRep("while", 0, None, label)
+
+                    midReps.append(loopMidRep)
+
+                    print(loopMidRep)
+
+                case "if":
+                    label = makeLabel(tokens, key)
+                    branchMidRep = MidRep("if", 0, None, label)
+
+                    midReps.append(branchMidRep)
+
+                    print(branchMidRep)
+
+    midReps.append(endMidRep)
+
+    for key, midRep in enumerate(midReps):
+        midRep.position['y'] = key * 100
+
+    return midReps
+
+midReps = makeMidRep(nestedTokens)
+
+for midRep in midReps:
+    print(midRep)
