@@ -114,22 +114,14 @@ def makeLabel(tokens, key):
         key += 1
     return label
 
-def makeMidRep(tokens):
-    midReps = []
+def makeSentenceMidRep(midReps, tokens):
     variables = []
     contents = []
-
-    startMidRep = MidRep("start", 0, None, "開始")
-    endMidRep = MidRep("end", 0, None, "終了")
-
-    midReps.append(startMidRep)
-    print(startMidRep)
-    print(endMidRep)
 
     for key, token in enumerate(tokens):
         if type(token) == list:
             # リスト時の処理を記述すること
-            pass
+            continue
         else:
             match token:
                 case '=':
@@ -154,6 +146,9 @@ def makeMidRep(tokens):
                     while type(tokens[keyCopy]) != list:
                         keyCopy += 1
 
+                    print(keyCopy)
+                    print(tokens[keyCopy])
+
                     # 中の表現をstartとendの間につなぐ必要がある
                     forStartMidRep.source = forStartMidRep.id
                     forStartMidRep.target = forEndMidRep.id
@@ -161,7 +156,7 @@ def makeMidRep(tokens):
                     forEndMidRep.source = forEndMidRep.id
                     forEndMidRep.target = forStartMidRep.id
 
-                    midReps.append(forEndMidRep)
+                    midReps.append(forStartMidRep)
                     midReps.append(forEndMidRep)
 
                     print(forStartMidRep)
@@ -183,14 +178,23 @@ def makeMidRep(tokens):
 
                     print(branchMidRep)
 
+def makeMidRep(midReps):
+    startMidRep = MidRep("start", 0, None, "開始")
+    midReps.append(startMidRep)
+
+    makeSentenceMidRep(midReps, nestedTokens)
+
+    endMidRep = MidRep("end", 0, None, "終了")
     midReps.append(endMidRep)
 
     for key, midRep in enumerate(midReps):
         midRep.position['y'] = key * 100
 
-    return midReps
+midReps = []
 
-midReps = makeMidRep(nestedTokens)
+makeMidRep(midReps)
+
+print("-----makeMidRep-----")
 
 for midRep in midReps:
     print(midRep)
