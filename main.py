@@ -13,14 +13,14 @@ app.add_middleware(
     allow_methods = ["*"]
 )
 
-class Req(BaseModel):
-    text: list[str]
+class Request(BaseModel):
+    src: list[str]
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 @app.post("/")
-async def write_root():
-    print("a")
-    return {"Hello": "World"}
+async def write_root(src: Request):
+    print(src)
+    return src
