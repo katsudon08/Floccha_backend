@@ -21,6 +21,7 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/")
-async def write_root(src: Request):
+async def write_root(req: Request):
+    src = req.src
     print(src)
     return src
