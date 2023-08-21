@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 
+import backend.analysis as analysis
+
 # *ドキュメントは/docsに書かれている
 app = FastAPI()
 
@@ -24,4 +26,5 @@ def read_root():
 async def write_root(req: Request):
     src = req.src
     print(src)
+    analysis.execute()
     return src

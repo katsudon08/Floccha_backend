@@ -30,13 +30,6 @@ def tokenize(textBlock):
     reTokens = nlp(reTokensText)
     return reTokens
 
-print("-----tokenize-----")
-
-tokens = tokenize(textBlock)
-
-for token in tokens:
-    print(token, token.pos_)
-
 def nesting(tokens):
     if tokens[0].pos == SPACE:
         raise ValueError
@@ -76,15 +69,6 @@ def nesting(tokens):
 
     midRepTokens = list(filter(None, midRepTokens))
     return midRepTokens
-
-print("-----nesting-----")
-
-# このトークンは型がstringになっている
-nestedTokens = nesting(tokens)
-
-print("ネスト後\n")
-for token in nestedTokens:
-    print(token)
 
 class MidRep:
     def __init__(self, id, x, y, label):
@@ -178,7 +162,7 @@ def makeSentenceMidRep(midReps, tokens):
 
                     print(branchMidRep)
 
-def makeMidRep(midReps):
+def makeMidRep(midReps, nestedTokens):
     startMidRep = MidRep("start", 0, None, "開始")
     midReps.append(startMidRep)
 
@@ -190,11 +174,32 @@ def makeMidRep(midReps):
     for key, midRep in enumerate(midReps):
         midRep.position['y'] = key * 100
 
-midReps = []
+def execute():
+    print("-----tokenize-----")
 
-makeMidRep(midReps)
+    tokens = tokenize(textBlock)
 
-print("-----makeMidRep-----")
+    for token in tokens:
+        print(token, token.pos_)
 
-for midRep in midReps:
-    print(midRep)
+
+    print("-----nesting-----")
+
+    # このトークンは型がstringになっている
+    nestedTokens = nesting(tokens)
+
+    print("ネスト後\n")
+    for token in nestedTokens:
+        print(token)
+
+    midReps = []
+
+    makeMidRep(midReps, nestedTokens)
+
+    print("-----makeMidRep-----")
+
+    for midRep in midReps:
+        print(midRep)
+
+if __name__ == "__main__":
+    execute()
