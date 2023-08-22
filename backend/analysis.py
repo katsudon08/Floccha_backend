@@ -201,5 +201,7 @@ def execute():
     for midRep in midReps:
         print(midRep)
 
+    return midReps
+
 if __name__ == "__main__":
     execute()
