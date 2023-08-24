@@ -26,5 +26,5 @@ def read_root():
 async def write_root(req: Request):
     src = req.src
     print(src)
-    data = analysis.execute()
+    data = analysis.execute(src)
     return data

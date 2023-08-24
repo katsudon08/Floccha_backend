@@ -174,34 +174,52 @@ def makeMidRep(midReps, nestedTokens):
     for key, midRep in enumerate(midReps):
         midRep.position['y'] = key * 100
 
-def execute():
-    print("-----tokenize-----")
-
-    tokens = tokenize(textBlock)
-
-    for token in tokens:
-        print(token, token.pos_)
-
-
-    print("-----nesting-----")
-
-    # このトークンは型がstringになっている
-    nestedTokens = nesting(tokens)
-
-    print("ネスト後\n")
-    for token in nestedTokens:
-        print(token)
-
+def makeEmptyMidRep():
     midReps = []
 
-    makeMidRep(midReps, nestedTokens)
+    startMidRep = MidRep("start", 0, 0, "開始")
+    endMidRep = MidRep("end", 0, 100, "終了")
 
-    print("-----makeMidRep-----")
+    startMidRep.source = startMidRep.id
+    startMidRep.target = endMidRep.id
 
-    for midRep in midReps:
-        print(midRep)
+    midReps.append(startMidRep)
+    midReps.append(endMidRep)
 
     return midReps
 
+def execute(textBlock):
+    try:
+        print("-----tokenize-----")
+
+        tokens = tokenize(textBlock)
+
+        for token in tokens:
+            print(token, token.pos_)
+
+
+        print("-----nesting-----")
+
+        # このトークンは型がstringになっている
+        nestedTokens = nesting(tokens)
+
+        print("ネスト後\n")
+        for token in nestedTokens:
+            print(token)
+
+        midReps = []
+
+        makeMidRep(midReps, nestedTokens)
+
+        print("-----makeMidRep-----")
+
+        for midRep in midReps:
+            print(midRep)
+
+        return midReps
+    except:
+        midReps = makeEmptyMidRep()
+        return midReps
+
 if __name__ == "__main__":
-    execute()
+    execute(textBlock)
