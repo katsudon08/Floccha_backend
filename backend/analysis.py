@@ -130,15 +130,23 @@ def makeSentenceMidRep(midReps, tokens):
                     while type(tokens[keyCopy]) != list:
                         keyCopy += 1
 
-                    print(keyCopy)
-                    print(tokens[keyCopy])
 
-                    # 中の表現をstartとendの間につなぐ必要がある
-                    forStartMidRep.source = forStartMidRep.id
-                    forStartMidRep.target = forEndMidRep.id
+                    if tokens[keyCopy] is not None:
+                        nestMidReps = []
+                        print(keyCopy)
+                        print(tokens[keyCopy])
 
-                    forEndMidRep.source = forEndMidRep.id
-                    forEndMidRep.target = forStartMidRep.id
+                        makeSentenceMidRep(nestMidReps, tokens[keyCopy])
+
+                        # 中の表現をstartとendの間につなぐ必要がある
+                        forStartMidRep.source = forStartMidRep.id
+                        forStartMidRep.target = nestMidReps[0].id
+
+                        nestMidReps[-1].source = nestMidReps[-1].id
+                        nestMidReps[-1].target = forEndMidRep.id
+
+                        forEndMidRep.source = forEndMidRep.id
+                        forEndMidRep.target = forStartMidRep.id
 
                     midReps.append(forStartMidRep)
                     midReps.append(forEndMidRep)
@@ -218,10 +226,10 @@ def execute(textBlock):
 
         makeMidRep(midReps, nestedTokens)
 
-        print("-----makeMidRep-----")
+        # print("-----makeMidRep-----")
 
-        for midRep in midReps:
-            print(midRep)
+        # for midRep in midReps:
+        #     print(midRep)
 
         return midReps
     except:
