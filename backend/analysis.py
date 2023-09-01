@@ -168,7 +168,14 @@ def makeMidRep(midReps, nestedTokens):
 
     makeSentenceMidRep(midReps, nestedTokens)
 
+    startMidRep.source = startMidRep.id
+    startMidRep.target = midReps[1].id
+
     endMidRep = MidRep("end", 0, None, "終了")
+
+    midReps[-1].source = midReps[-1].id
+    midReps[-1].target = endMidRep.id
+
     midReps.append(endMidRep)
 
     for key, midRep in enumerate(midReps):
