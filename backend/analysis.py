@@ -158,27 +158,46 @@ def makeSentenceMidRep(midReps, tokens):
 
                 case "while":
                     label = makeLabel(tokens, key)
-                    loopMidRep = MidRep("while", 0, None, label)
+                    whileMidRep = MidRep("while", 0, None, label)
 
-                    midReps.append(loopMidRep)
+                    midReps.append(whileMidRep)
 
-                    print(loopMidRep)
+                    print(whileMidRep)
 
                 case "if":
                     label = makeLabel(tokens, key)
-                    branchMidRep = MidRep("if", 0, None, label)
+                    ifMidRep = MidRep("if", 0, None, label)
 
-                    midReps.append(branchMidRep)
+                    midReps.append(ifMidRep)
 
-                    print(branchMidRep)
+                    print(ifMidRep)
 
-                # case _:
-                #     label = "未実装のプログラム"
-                #     midRep = MidRep("None", 0, None, label)
+                case "elif":
+                    # TODO
+                    pass
 
-                #     midReps.append(midRep)
+                case "else":
+                    # TODO
+                    pass
 
-                #     print(midRep)
+                case '(':
+                    # TODO: 関数実行時の処理
+                    pass
+
+                case '.':
+                    # TODO: クラスのメンバへのアクセスなのか、メソッドへのアクセスなのかを判別すること
+                    pass
+
+                case _:
+                    count += 1 # tokensの中でこれらの条件にあてはまるものが一つもない場合、未実装であることを表したいのでカウンターを設置
+
+    if count == len(tokens):
+        label = "未実装のプログラム"
+        midRep = MidRep("None", 0, None, label)
+
+        midReps.append(midRep)
+
+        print(midRep)
 
 def makeMidRep(midReps, nestedTokens):
     startMidRep = MidRep("start", 0, None, "開始")
