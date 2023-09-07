@@ -1,6 +1,7 @@
 import spacy
 from spacy.symbols import SPACE
 import re
+import pdb
 
 textBlock = [
     "for i in range(5):",
@@ -109,8 +110,9 @@ def makeSentenceMidRep(midReps, tokens):
         else:
             match token:
                 case '=':
-                    variable = token[key - 1]
-                    content = token[key + 1]
+                    print("イコール")
+                    variable = tokens[key - 1]
+                    content = tokens[key + 1]
 
                     variableMidRep = MidRep(f"variable-{variable}", 0, None, f"変数 {variable} に {content} を代入")
 
@@ -130,15 +132,12 @@ def makeSentenceMidRep(midReps, tokens):
                     while type(tokens[keyCopy]) != list:
                         keyCopy += 1
 
-
                     if tokens[keyCopy] is not None:
                         nestMidReps = []
-                        print(keyCopy)
                         print(tokens[keyCopy])
 
                         makeSentenceMidRep(nestMidReps, tokens[keyCopy])
 
-                        # 中の表現をstartとendの間につなぐ必要がある
                         forStartMidRep.source = forStartMidRep.id
                         forStartMidRep.target = nestMidReps[0].id
 
@@ -149,6 +148,9 @@ def makeSentenceMidRep(midReps, tokens):
                         forEndMidRep.target = forStartMidRep.id
 
                     midReps.append(forStartMidRep)
+
+                    midReps.extend(nestMidReps)
+
                     midReps.append(forEndMidRep)
 
                     print(forStartMidRep)
@@ -169,6 +171,14 @@ def makeSentenceMidRep(midReps, tokens):
                     midReps.append(branchMidRep)
 
                     print(branchMidRep)
+
+                # case _:
+                #     label = "未実装のプログラム"
+                #     midRep = MidRep("None", 0, None, label)
+
+                #     midReps.append(midRep)
+
+                #     print(midRep)
 
 def makeMidRep(midReps, nestedTokens):
     startMidRep = MidRep("start", 0, None, "開始")
@@ -226,10 +236,10 @@ def execute(textBlock):
 
         makeMidRep(midReps, nestedTokens)
 
-        # print("-----makeMidRep-----")
+        print("-----makeMidRep-----")
 
-        # for midRep in midReps:
-        #     print(midRep)
+        for midRep in midReps:
+            print(midRep)
 
         return midReps
     except:
