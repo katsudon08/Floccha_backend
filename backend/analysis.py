@@ -91,6 +91,27 @@ class MidRep:
 
         return r
 
+class ErrorMidRep:
+    id = "errorMidRep"
+    position = {'x': 0, 'y': None}
+    edgeId = "edge-" + id
+    source = id
+    target = "end"
+
+    def __init__(self, label):
+        self.label = label
+
+    def __str__(self):
+        r = ""
+        r += "id: " + self.id + "\n"
+        r += "pos: " + str(self.position) + "\n"
+        r += "data: " + str(self.data) + "\n"
+        r += "edge-id: " + self.edgeId + "\n"
+        r += "src: " + str(self.source) + "\n"
+        r += "trg: " + str(self.target) + "\n"
+
+        return r
+
 def makeLabel(tokens, key):
     key = key + 1
     label = ""
@@ -102,94 +123,98 @@ def makeLabel(tokens, key):
 def makeSentenceMidRep(midReps, tokens):
     variables = []
     contents = []
+    count = 0
 
-    for key, token in enumerate(tokens):
-        if type(token) == list:
-            # リスト時の処理を記述すること
-            continue
-        else:
-            match token:
-                case '=':
-                    print("イコール")
-                    variable = tokens[key - 1]
-                    content = tokens[key + 1]
+    try:
+        for key, token in enumerate(tokens):
+            if type(token) != list:
+                match token:
+                    case '=':
+                        print("イコール")
+                        variable = tokens[key - 1]
+                        content = tokens[key + 1]
 
-                    variableMidRep = MidRep(f"variable-{variable}", 0, None, f"変数 {variable} に {content} を代入")
+                        variableMidRep = MidRep(f"variable-{variable}", 0, None, f"変数 {variable} に {content} を代入")
 
-                    variables.append(variable)
-                    contents.append(content)
-                    midReps.append(variableMidRep)
+                        variables.append(variable)
+                        contents.append(content)
+                        midReps.append(variableMidRep)
 
-                    print(variableMidRep)
+                        print(variableMidRep)
 
-                case "for":
-                    label = makeLabel(tokens, key)
-                    # 前要素の高さに+100した高さにする必要がある
-                    forStartMidRep = MidRep("for_start", 0, None, label)
-                    forEndMidRep = MidRep("for_end", 0, None, "")
+                    case "for":
+                        label = makeLabel(tokens, key)
+                        # 前要素の高さに+100した高さにする必要がある
+                        forStartMidRep = MidRep("for_start", 0, None, label)
+                        forEndMidRep = MidRep("for_end", 0, None, "")
 
-                    keyCopy = key
-                    while type(tokens[keyCopy]) != list:
-                        keyCopy += 1
+                        keyCopy = key
+                        while type(tokens[keyCopy]) != list:
+                            keyCopy += 1
 
-                    if tokens[keyCopy] is not None:
-                        nestMidReps = []
-                        print(tokens[keyCopy])
+                        if tokens[keyCopy] is not None:
+                            nestMidReps = []
+                            print(tokens[keyCopy])
 
-                        makeSentenceMidRep(nestMidReps, tokens[keyCopy])
+                            makeSentenceMidRep(nestMidReps, tokens[keyCopy])
 
-                        forStartMidRep.source = forStartMidRep.id
-                        forStartMidRep.target = nestMidReps[0].id
+                            forStartMidRep.source = forStartMidRep.id
+                            forStartMidRep.target = nestMidReps[0].id
 
-                        nestMidReps[-1].source = nestMidReps[-1].id
-                        nestMidReps[-1].target = forEndMidRep.id
+                            nestMidReps[-1].source = nestMidReps[-1].id
+                            nestMidReps[-1].target = forEndMidRep.id
 
-                        forEndMidRep.source = forEndMidRep.id
-                        forEndMidRep.target = forStartMidRep.id
+                            forEndMidRep.source = forEndMidRep.id
+                            forEndMidRep.target = forStartMidRep.id
 
-                    midReps.append(forStartMidRep)
+                        midReps.append(forStartMidRep)
 
-                    midReps.extend(nestMidReps)
+                        midReps.extend(nestMidReps)
 
-                    midReps.append(forEndMidRep)
+                        midReps.append(forEndMidRep)
 
-                    print(forStartMidRep)
-                    print(forEndMidRep)
+                        print(forStartMidRep)
+                        print(forEndMidRep)
 
-                case "while":
-                    label = makeLabel(tokens, key)
-                    whileMidRep = MidRep("while", 0, None, label)
+                    case "while":
+                        label = makeLabel(tokens, key)
+                        whileMidRep = MidRep("while", 0, None, label)
 
-                    midReps.append(whileMidRep)
+                        midReps.append(whileMidRep)
 
-                    print(whileMidRep)
+                        print(whileMidRep)
 
-                case "if":
-                    label = makeLabel(tokens, key)
-                    ifMidRep = MidRep("if", 0, None, label)
+                    case "if":
+                        label = makeLabel(tokens, key)
+                        ifMidRep = MidRep("if", 0, None, label)
 
-                    midReps.append(ifMidRep)
+                        midReps.append(ifMidRep)
 
-                    print(ifMidRep)
+                        print(ifMidRep)
 
-                case "elif":
-                    # TODO
-                    pass
+                    case "elif":
+                        # TODO
+                        pass
 
-                case "else":
-                    # TODO
-                    pass
+                    case "else":
+                        # TODO
+                        pass
 
-                case '(':
-                    # TODO: 関数実行時の処理
-                    pass
+                    case '(':
+                        # TODO: 関数実行時の処理
+                        pass
 
-                case '.':
-                    # TODO: クラスのメンバへのアクセスなのか、メソッドへのアクセスなのかを判別すること
-                    pass
+                    case '.':
+                        # TODO: クラスのメンバへのアクセスなのか、メソッドへのアクセスなのかを判別すること
+                        pass
 
-                case _:
-                    count += 1 # tokensの中でこれらの条件にあてはまるものが一つもない場合、未実装であることを表したいのでカウンターを設置
+                    case _:
+                        count += 1 # tokensの中でこれらの条件にあてはまるものが一つもない場合、未実装であることを表したいのでカウンターを設置
+    except Exception as e:
+        errorMidRep = ErrorMidRep(e)
+        midReps.append(errorMidRep)
+
+        print(errorMidRep)
 
     if count == len(tokens):
         label = "未実装のプログラム"
@@ -252,6 +277,8 @@ def execute(textBlock):
             print(token)
 
         midReps = []
+
+        print("makemidReps")
 
         makeMidRep(midReps, nestedTokens)
 
